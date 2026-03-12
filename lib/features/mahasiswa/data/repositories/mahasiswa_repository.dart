@@ -8,23 +8,23 @@ class MahasiswaRepository {
 
     return [
       MahasiswaModel(
-        nama: 'Aldi Pratama',
+        nama: 'Ahmad Kasim',
         nim: '220810101',
-        email: 'aldi.pratama@email.com',
+        email: 'ahmad.kasim@email.com',
         jurusan: 'Teknik Informatika',
         semester: 4,
       ),
       MahasiswaModel(
-        nama: 'Budi Santoso',
+        nama: 'Billy D. Wijoyo',
         nim: '220810102',
-        email: 'budi.santoso@email.com',
+        email: 'billy.wijoyo@email.com',
         jurusan: 'Teknik Informatika',
         semester: 6,
       ),
       MahasiswaModel(
-        nama: 'Citra Dewi',
+        nama: 'Cantika Kusumawati',
         nim: '220810103',
-        email: 'citra.dewi@email.com',
+        email: 'cantika.kusumawati@email.com',
         jurusan: 'Teknik Informatika',
         semester: 2,
       ),

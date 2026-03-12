@@ -8,21 +8,21 @@ class MahasiswaAktifRepository {
 
     return [
       MahasiswaAktifModel(
-        nama: 'Budi Santoso',
+        nama: 'Ahmad Kasim',
         nim: '220810102',
-        email: 'budi@email.com',
+        email: 'ahmad.kasim@email.com',
         semester: 6,
       ),
       MahasiswaAktifModel(
-        nama: 'Citra Dewi',
+        nama: 'Citra Kusumawati',
         nim: '220810103',
-        email: 'citra@email.com',
+        email: 'citra.kusumawati@email.com',
         semester: 4,
       ),
       MahasiswaAktifModel(
         nama: 'Dika Pratama',
         nim: '220810104',
-        email: 'dika@email.com',
+        email: 'dika.pratama@email.com',
         semester: 2,
       ),
     ];
