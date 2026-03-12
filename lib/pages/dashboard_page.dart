@@ -1,47 +1,119 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/dashboard_provider.dart';
 
-/// provider untuk state dashboard
-final dashboardProvider =
-    StateNotifierProvider<DashboardNotifier, DashboardState>(
-  (ref) => DashboardNotifier(),
-);
+class DashboardPage extends StatelessWidget {
+  const DashboardPage({Key? key}) : super(key: key);
 
-class DashboardState {
-  final int mahasiswa;
-  final int dosen;
-  final int matakuliah;
-
-  const DashboardState({
-    this.mahasiswa = 0,
-    this.dosen = 0,
-    this.matakuliah = 0,
-  });
-
-  DashboardState copyWith({
-    int? mahasiswa,
-    int? dosen,
-    int? matakuliah,
-  }) {
-    return DashboardState(
-      mahasiswa: mahasiswa ?? this.mahasiswa,
-      dosen: dosen ?? this.dosen,
-      matakuliah: matakuliah ?? this.matakuliah,
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Dashboard'),
+        backgroundColor: Colors.blue,
+        centerTitle: true,
+      ),
+      body: Consumer<DashboardProvider>(
+        builder: (context, provider, child) {
+          return Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                _buildMenuItem(
+                  context,
+                  'Mahasiswa',
+                  provider.mahasiswa,
+                  Icons.school,
+                  Colors.blue,
+                  provider.tambahMahasiswa,
+                ),
+                const SizedBox(height: 15),
+                _buildMenuItem(
+                  context,
+                  'Dosen',
+                  provider.dosen,
+                  Icons.person,
+                  Colors.green,
+                  provider.tambahDosen,
+                ),
+                const SizedBox(height: 15),
+                _buildMenuItem(
+                  context,
+                  'Mata Kuliah',
+                  provider.matakuliah,
+                  Icons.book,
+                  Colors.orange,
+                  provider.tambahMatakuliah,
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
-}
 
-class DashboardNotifier extends StateNotifier<DashboardState> {
-  DashboardNotifier() : super(const DashboardState());
-
-  void tambahMahasiswa() {
-    state = state.copyWith(mahasiswa: state.mahasiswa + 1);
-  }
-
-  void tambahDosen() {
-    state = state.copyWith(dosen: state.dosen + 1);
-  }
-
-  void tambahMatakuliah() {
-    state = state.copyWith(matakuliah: state.matakuliah + 1);
+  Widget _buildMenuItem(
+      BuildContext context,
+      String title,
+      int count,
+      IconData icon,
+      Color color,
+      VoidCallback onTap,
+      ) {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 30,
+                backgroundColor: color.withOpacity(0.2),
+                child: Icon(
+                  icon,
+                  size: 35,
+                  color: color,
+                ),
+              ),
+              const SizedBox(width: 20),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      'Total: $count',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: color,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                color: Colors.grey[400],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

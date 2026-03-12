@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 
-// Mengatur tema aplikasi
+/// Mengatur tema aplikasi
 class AppTheme {
-  AppTheme._(); // Private constructor agar tidak bisa diinstansiasi
+  AppTheme._();
 
   // Colors
-  static const Color primaryColor = Color(0xFF1E8BE5);
-  static const Color secondaryColor = Color(0xFF2A6A9A);
+  static const Color primaryColor = Color(0xFF1E88E5);
+  static const Color secondaryColor = Color(0xFF26A69A);
   static const Color errorColor = Color(0xFFE53935);
   static const Color successColor = Color(0xFF43A047);
-  static const Color warningColor = Color(0xFFBBBCB0);
+  static const Color warningColor = Color(0xFFFFB300);
   static const Color backgroundColor = Color(0xFFF5F5F5);
   static const Color cardColor = Colors.white;
   static const Color textPrimaryColor = Color(0xFF212121);
   static const Color textSecondaryColor = Color(0xFF757575);
 
   // Light Theme
-  static final ThemeData lightTheme = ThemeData(
+  static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
     primaryColor: primaryColor,
@@ -50,7 +50,7 @@ class AppTheme {
   );
 
   // Dark Theme
-  static final ThemeData darkTheme = ThemeData(
+  static ThemeData darkTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
     primaryColor: primaryColor,

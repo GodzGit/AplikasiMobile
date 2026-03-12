@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
-import '../constants/app_constants.dart';
-import '../theme/app_theme.dart';
+import '../constants/constants.dart';
+import '../theme/theme.dart';
 
-// Loading Widget
+/// Loading Widget
 class LoadingWidget extends StatelessWidget {
   const LoadingWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: CircularProgressIndicator(),
-    );
+    return const Center(child: CircularProgressIndicator());
   }
 }
 
-// Error Widget
+/// Error Widget
 class CustomErrorWidget extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
@@ -33,11 +31,9 @@ class CustomErrorWidget extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: AppTheme.errorColor,
-            ),
+            Icon(Icons.error_outline,
+                size: 64,
+                color: AppTheme.errorColor),
             const SizedBox(height: AppConstants.paddingMedium),
             Text(
               message,
@@ -59,7 +55,7 @@ class CustomErrorWidget extends StatelessWidget {
   }
 }
 
-// Empty Widget
+/// Empty Widget
 class EmptyWidget extends StatelessWidget {
   final String message;
   final IconData icon;
@@ -76,11 +72,9 @@ class EmptyWidget extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            size: 64,
-            color: AppTheme.textSecondaryColor,
-          ),
+          Icon(icon,
+              size: 64,
+              color: AppTheme.textSecondaryColor),
           const SizedBox(height: AppConstants.paddingMedium),
           Text(
             message,
@@ -96,7 +90,7 @@ class EmptyWidget extends StatelessWidget {
   }
 }
 
-// Card Widget
+/// Custom Card Widget
 class CustomCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
@@ -114,9 +108,11 @@ class CustomCard extends StatelessWidget {
     return Card(
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
+        borderRadius:
+        BorderRadius.circular(AppConstants.radiusMedium),
         child: Padding(
-          padding: padding ?? const EdgeInsets.all(AppConstants.paddingMedium),
+          padding: padding ??
+              const EdgeInsets.all(AppConstants.paddingMedium),
           child: child,
         ),
       ),

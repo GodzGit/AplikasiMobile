@@ -1,50 +1,113 @@
 import 'dart:io';
 
 class Mahasiswa {
-  String nama = "Anang";
-  String? namaLengkap;
+  String? nama;
   int? nim;
   String? jurusan;
 
+  void inputData() {
+    print("Masukkan Nama:");
+    nama = stdin.readLineSync();
+
+    print("Masukkan NIP:");
+    nim = int.tryParse(stdin.readLineSync() ?? '');
+
+    print("Masukkan Jurusan:");
+    jurusan = stdin.readLineSync();
+  }
+
   void tampilkanData() {
-    print("Nama default: $nama");
-    print("Nama lengkap: ${namaLengkap ?? 'Belum diisi'}");
-    print("NIM: ${nim ?? 'Belum diisi'}");
-    print("Jurusan: ${jurusan ?? 'Belum diisi'}");
+    print("Nama    : ${nama ?? "Belum diisi"}");
+    print("NIM     : ${nim ?? "Belum diisi"}");
+    print("Jurusan : ${jurusan ?? "Belum diisi"}");
   }
 }
 
-void main() {
-  Mahasiswa mahasiswa = Mahasiswa();
-  
-  // Menampilkan data awal
-  print("Data awal:");
-  mahasiswa.tampilkanData();
-  
-  // Mengubah nama
-  stdout.write("\nMasukkan nama baru: ");
-  String? namaBaru = stdin.readLineSync();
-  if (namaBaru != null && namaBaru.isNotEmpty) {
-    mahasiswa.nama = namaBaru;
-    print("Nama berhasil diubah.");
-  } else {
-    print("Nama tidak boleh kosong.");
+/// MIXIN 1
+mixin Absensi {
+  void isiAbsensi() {
+    print("Absensi berhasil diisi.");
   }
-  
-  // Input data lengkap
-  print("\n=== Input Data Mahasiswa ===");
-  
-  print("Masukkan Nama Lengkap:");
-  mahasiswa.namaLengkap = stdin.readLineSync();
-  
-  print("Masukkan NIM Mahasiswa:");
-  String? inputNim = stdin.readLineSync();
-  mahasiswa.nim = int.tryParse(inputNim ?? '');
-  
-  print("Masukkan Jurusan Mahasiswa:");
-  mahasiswa.jurusan = stdin.readLineSync();
-  
-  // Menampilkan semua data
-  print("\n=== Data Mahasiswa ===");
-  mahasiswa.tampilkanData();
+}
+
+/// MIXIN 2
+mixin Penilaian {
+  void beriNilai() {
+    print("Nilai berhasil diberikan.");
+  }
+}
+
+/// MIXIN 3
+mixin Informasi {
+  void tampilkanInfoTambahan() {
+    print("Menampilkan informasi tambahan.");
+  }
+}
+
+/// DOSEN (EXTENDS + MIXIN)
+class Dosen extends Mahasiswa with Absensi, Penilaian {
+  String? mataKuliah;
+
+  void inputMataKuliah() {
+    print("Masukkan Mata Kuliah:");
+    mataKuliah = stdin.readLineSync();
+  }
+
+  void tampilkanDosen() {
+    print("Status  : Dosen");
+    print("Mata Kuliah : ${mataKuliah ?? "Belum diisi"}");
+  }
+}
+
+/// FAKULTAS (EXTENDS + MIXIN)
+class Fakultas extends Mahasiswa with Informasi {
+  String? namaFakultas;
+
+  void inputFakultas() {
+    print("Masukkan Nama Fakultas:");
+    namaFakultas = stdin.readLineSync();
+  }
+
+  void tampilkanFakultas() {
+    print("Status        : Fakultas");
+    print("Nama Fakultas : ${namaFakultas ?? "Belum diisi"}");
+  }
+}
+
+/// MAIN
+void main() {
+  print("Pilih Role:");
+  print("1. Dosen");
+  print("2. Fakultas");
+
+  String? pilihan = stdin.readLineSync();
+
+  if (pilihan == "1") {
+    Dosen dosen = Dosen();
+    dosen.inputData();
+    dosen.inputMataKuliah();
+
+    print("\n=== DATA DOSEN ===");
+    dosen.tampilkanData();
+    dosen.tampilkanDosen();
+
+    // Dari mixin
+    dosen.isiAbsensi();
+    dosen.beriNilai();
+
+  } else if (pilihan == "2") {
+    Fakultas fakultas = Fakultas();
+    fakultas.inputData();
+    fakultas.inputFakultas();
+
+    print("\n=== DATA FAKULTAS ===");
+    fakultas.tampilkanData();
+    fakultas.tampilkanFakultas();
+
+    // Dari mixin
+    fakultas.tampilkanInfoTambahan();
+
+  } else {
+    print("Pilihan tidak valid.");
+  }
 }
