@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tes/core/constants/constants.dart';
 import 'package:tes/features/dosen/data/models/dosen_model.dart';
 
+// MODUL 5: Widget card modern untuk menampilkan data dosen dari API
 class ModernDosenCard extends StatefulWidget {
   final DosenModel dosen;
   final VoidCallback? onTap;
@@ -27,7 +28,6 @@ class _ModernDosenCardState extends State<ModernDosenCard>
   @override
   void initState() {
     super.initState();
-
     _controller = AnimationController(
       duration: const Duration(milliseconds: 150),
       vsync: this,
@@ -37,10 +37,7 @@ class _ModernDosenCardState extends State<ModernDosenCard>
       begin: 1.0,
       end: 0.97,
     ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOut,
-      ),
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
   }
 
@@ -52,12 +49,11 @@ class _ModernDosenCardState extends State<ModernDosenCard>
 
   @override
   Widget build(BuildContext context) {
-    final gradientColors =
-        widget.gradientColors ??
-            [
-              Theme.of(context).primaryColor,
-              Theme.of(context).primaryColor.withOpacity(0.7),
-            ];
+    final gradientColors = widget.gradientColors ??
+        [
+          Theme.of(context).primaryColor,
+          Theme.of(context).primaryColor.withOpacity(0.7),
+        ];
 
     return GestureDetector(
       onTapDown: (_) => _controller.forward(),
@@ -93,8 +89,7 @@ class _ModernDosenCardState extends State<ModernDosenCard>
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-
-                /// Avatar with Gradient
+                // Avatar dengan inisial dari API
                 Container(
                   width: 60,
                   height: 60,
@@ -115,7 +110,7 @@ class _ModernDosenCardState extends State<ModernDosenCard>
                   ),
                   child: Center(
                     child: Text(
-                      widget.dosen.nama.substring(0, 1).toUpperCase(),
+                      widget.dosen.name.substring(0, 1).toUpperCase(),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 24,
@@ -127,14 +122,13 @@ class _ModernDosenCardState extends State<ModernDosenCard>
 
                 const SizedBox(width: 16),
 
-                /// Dosen Information
+                // Informasi Dosen dari API
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-
                       Text(
-                        widget.dosen.nama,
+                        widget.dosen.name,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -147,8 +141,8 @@ class _ModernDosenCardState extends State<ModernDosenCard>
                       const SizedBox(height: 8),
 
                       _buildInfoRow(
-                        Icons.badge_outlined,
-                        'NIP: ${widget.dosen.nip}',
+                        Icons.person_outline,
+                        '@${widget.dosen.username}',
                       ),
 
                       const SizedBox(height: 4),
@@ -161,14 +155,21 @@ class _ModernDosenCardState extends State<ModernDosenCard>
                       const SizedBox(height: 4),
 
                       _buildInfoRow(
-                        Icons.school_outlined,
-                        widget.dosen.jurusan,
+                        Icons.phone_outlined,
+                        widget.dosen.phone,
+                      ),
+
+                      const SizedBox(height: 4),
+
+                      _buildInfoRow(
+                        Icons.location_city,
+                        '${widget.dosen.address.city}, ${widget.dosen.address.street}',
                       ),
                     ],
                   ),
                 ),
 
-                /// Arrow Icon
+                // Arrow Icon
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
@@ -207,9 +208,10 @@ class _ModernDosenCardState extends State<ModernDosenCard>
   }
 }
 
+// MODUL 5: ListView untuk menampilkan data dari API
 class DosenListView extends StatelessWidget {
   final List<DosenModel> dosenList;
-  final VoidCallback? onRefresh;
+  final Future<void> Function()? onRefresh;
   final bool useModernCard;
 
   const DosenListView({
@@ -224,17 +226,15 @@ class DosenListView extends StatelessWidget {
       [Color(0xFF667eea), Color(0xFF764ba2)], // ungu
       [Color(0xFFFF7E5F), Color(0xFFFD3A69)], // pink
       [Color(0xFF36D1DC), Color(0xFF5B86E5)], // biru
+      [Color(0xFF43e97b), Color(0xFF38f9d7)], // hijau
     ];
-
     return gradients[index % gradients.length];
   }
 
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-      onRefresh: () async {
-        onRefresh?.call();
-      },
+      onRefresh: onRefresh ?? () async {},
       child: ListView.builder(
         padding: const EdgeInsets.all(AppConstants.paddingMedium),
         itemCount: dosenList.length,
@@ -243,16 +243,31 @@ class DosenListView extends StatelessWidget {
 
           return useModernCard
               ? ModernDosenCard(
-            dosen: dosen,
-            gradientColors: _getGradient(index),
-          )
+                  dosen: dosen,
+                  gradientColors: _getGradient(index),
+                  onTap: () {
+                    // MODUL 5: Menampilkan detail data dari API
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('${dosen.name} - ${dosen.email}'),
+                        behavior: SnackBarBehavior.floating,
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
+                  },
+                )
               : Card(
-            child: ListTile(
-              title: Text(dosen.nama),
-              subtitle: Text(dosen.email),
-              trailing: const Icon(Icons.arrow_forward_ios),
-            ),
-          );
+                  child: ListTile(
+                    title: Text(dosen.name),
+                    subtitle: Text(dosen.email),
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Detail: ${dosen.name}')),
+                      );
+                    },
+                  ),
+                );
         },
       ),
     );

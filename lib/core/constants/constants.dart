@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
 class AppConstants {
+  // API URLs
+  static const String baseUrl = 'https://jsonplaceholder.typicode.com';
+  static const String usersEndpoint = '/users';
+  static const String commentsEndpoint = '/comments';
+  static const String postsEndpoint = '/posts';
 
   // App Info
   static const String appName = 'Dashboard Mahasiswa D4TI';
@@ -27,7 +32,7 @@ class AppConstants {
     [Color(0xFF43e97b), Color(0xFF38f9d7)], // Green
   ];
 
-  // Individual Gradient Colors (optional - for direct access)
+  // Individual Gradient Colors
   static const List<Color> gradientPurple = [
     Color(0xFF667eea),
     Color(0xFF764ba2),

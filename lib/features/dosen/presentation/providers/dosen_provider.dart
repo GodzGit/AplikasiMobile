@@ -2,41 +2,37 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tes/features/dosen/data/models/dosen_model.dart';
 import 'package:tes/features/dosen/data/repositories/dosen_repository.dart';
 
-/// Repository Provider
-final dosenRepositoryProvider = Provider<DosenRepository>((ref) {
-  return DosenRepository();
+// MODUL 5: Provider untuk mengelola state data dosen
+final dosenNotifierProvider = StateNotifierProvider<DosenNotifier, AsyncValue<List<DosenModel>>>((ref) {
+  return DosenNotifier();
 });
 
-/// StateNotifier untuk mengelola state dosen
 class DosenNotifier extends StateNotifier<AsyncValue<List<DosenModel>>> {
-  final DosenRepository _repository;
-
-  DosenNotifier(this._repository) : super(const AsyncValue.loading()) {
-    loadDosenList();
+  DosenNotifier() : super(const AsyncValue.loading()) {
+    fetchDosen();
   }
 
-  /// Load data dosen dalam bentuk list
-  Future<void> loadDosenList() async {
-    state = const AsyncValue.loading();
+  // MODUL 5: Method untuk mengambil data dari API
+  Future<void> fetchDosen() async {
     try {
-      final data = await _repository.getDosenList();
-      state = AsyncValue.data(data);
-    } catch (error, stackTrace) {
-      state = AsyncValue.error(error, stackTrace);
+      print('🔄 Memuat data dosen...');
+      final repository = DosenRepository();
+      
+      // MODUL 5: Bisa pilih HTTP atau DIO (true = DIO, false = HTTP)
+      final dosenList = await repository.getDosenList(useDio: true);
+      
+      print('✅ Data dosen berhasil dimuat: ${dosenList.length} item');
+      state = AsyncValue.data(dosenList);
+    } catch (error, stack) {
+      print('❌ Gagal memuat data: $error');
+      state = AsyncValue.error(error, stack);
     }
   }
 
-  /// Refresh data dosen dalam bentuk list
+  // MODUL 5: Method untuk refresh data
   Future<void> refresh() async {
-    await loadDosenList();
+    print('🔄 Refresh data dosen...');
+    state = const AsyncValue.loading();
+    await fetchDosen();
   }
 }
-
-/// Dosen Notifier Provider
-final dosenNotifierProvider =
-StateNotifierProvider.autoDispose<
-    DosenNotifier,
-    AsyncValue<List<DosenModel>>>((ref) {
-  final repository = ref.watch(dosenRepositoryProvider);
-  return DosenNotifier(repository);
-});

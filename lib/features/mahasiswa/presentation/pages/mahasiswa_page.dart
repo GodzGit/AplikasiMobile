@@ -40,7 +40,7 @@ class MahasiswaPage extends ConsumerWidget {
         data: (mahasiswaList) {
           return MahasiswaListView(
             mahasiswaList: mahasiswaList,
-            onRefresh: () {
+            onRefresh: () async {  // ← tambahkan async
               ref.invalidate(mahasiswaNotifierProvider);
             },
           );

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tes/core/widgets/widgets.dart';
 import 'package:tes/features/dosen/presentation/providers/dosen_provider.dart';
 import 'package:tes/features/dosen/presentation/widgets/dosen_widget.dart';
 
+// MODUL 5: Halaman untuk menampilkan data dari API
 class DosenPage extends ConsumerWidget {
   const DosenPage({super.key});
 
@@ -13,40 +13,60 @@ class DosenPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Data Dosen'),
+        title: const Text('Data Dosen - REST API'),
         elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
             onPressed: () {
-              ref.invalidate(dosenNotifierProvider);
+              ref.read(dosenNotifierProvider.notifier).refresh();
             },
             tooltip: 'Refresh',
           ),
         ],
       ),
-
       body: dosenState.when(
-
-        // State: Loading
-        loading: () => const LoadingWidget(),
-
-        // State: Error
-        error: (error, stack) => CustomErrorWidget(
-          message: 'Gagal memuat data dosen: ${error.toString()}',
-          onRetry: () {
-            ref.read(dosenNotifierProvider.notifier).refresh();
-          },
+        loading: () => const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text('Mengambil data dari API...'),
+            ],
+          ),
         ),
-
-        // State: Data
+        error: (error, stack) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
+                const SizedBox(height: 16),
+                Text(
+                  'Gagal memuat data: ${error.toString()}',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () {
+                    ref.read(dosenNotifierProvider.notifier).refresh();
+                  },
+                  child: const Text('Coba Lagi'),
+                ),
+              ],
+            ),
+          ),
+        ),
         data: (dosenList) {
           return DosenListView(
             dosenList: dosenList,
-            onRefresh: () {
-              ref.invalidate(dosenNotifierProvider);
+            onRefresh: () async {
+              ref.read(dosenNotifierProvider.notifier).refresh();
             },
-            useModernCard: true, // Set to false for simple card
+            useModernCard: true,
           );
         },
       ),
