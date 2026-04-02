@@ -1,19 +1,19 @@
 import 'package:tes/core/constants/constants.dart';
 import 'package:tes/core/theme/theme.dart';
+import 'package:tes/core/services/local_storage_service.dart';  // ← TAMBAHKAN IMPORT INI
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:tes/features/dashboard/presentation/pages/dashboard_page.dart';
 
-void main() {
-  // runApp(const MyApp());
-  runApp(ProviderScope(child: MyApp()));
+void main() async {  // ← TAMBAHKAN async
+  WidgetsFlutterBinding.ensureInitialized();  // ← TAMBAHKAN INI
+  await LocalStorageService.init();  // ← TAMBAHKAN INI (inisialisasi local storage)
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
+  const MyApp({super.key});  // ← TAMBAHKAN const
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.light,
-      home: DashboardPage(),
+      home: const DashboardPage(),  // ← TAMBAHKAN const
     );
   }
 }

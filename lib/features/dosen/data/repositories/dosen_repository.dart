@@ -1,74 +1,78 @@
-// MODUL 5: Repository untuk memanggil API
+import 'package:tes/core/network/dio_client.dart';
+import 'package:tes/core/services/local_storage_service.dart';
 import 'package:tes/features/dosen/data/models/dosen_model.dart';
-import 'package:http/http.dart' as http;  // MODUL 5: Menggunakan http
-import 'dart:convert';
-import 'package:dio/dio.dart';  // MODUL 5: Menggunakan dio
 
 class DosenRepository {
   final String baseUrl = "https://jsonplaceholder.typicode.com";
-  final Dio _dio = Dio();  // MODUL 5: Inisialisasi dio
+  final DioClient _dioClient = DioClient();
+  final LocalStorageService _storage = LocalStorageService();
 
-  // MODUL 5: Method dengan pilihan menggunakan http atau dio
-  Future<List<DosenModel>> getDosenList({bool useDio = true}) async {
-    if (useDio) {
-      return getDosenListWithDio();  // MODUL 5: Menggunakan dio
-    } else {
-      return getDosenListWithHttp(); // MODUL 5: Menggunakan http
-    }
-  }
-
-  // MODUL 5: GET data menggunakan HTTP
-  Future<List<DosenModel>> getDosenListWithHttp() async {
+  Future<List<DosenModel>> getDosenList({bool forceRefresh = false}) async {
     try {
-      print('📡 Mengambil data dosen dengan HTTP...');
-      final response = await http.get(
-        Uri.parse('$baseUrl/users'),
-        headers: {'Content-Type': 'application/json'},
-      );
-
-      print('📥 Status Code: ${response.statusCode}');
-      
-      if (response.statusCode == 200) {
-        List<dynamic> data = json.decode(response.body);
-        print('✅ Berhasil mengambil ${data.length} data dosen');
-        return data.map((json) => DosenModel.fromJson(json)).toList();
-      } else {
-        throw Exception('Gagal memuat data: ${response.statusCode}');
+      if (!forceRefresh && _isCacheValid()) {
+        print('📦 Mengambil data dari LOCAL STORAGE (cache)');
+        final cachedData = _storage.getCachedDosenList();
+        if (cachedData != null && cachedData.isNotEmpty) {
+          return cachedData.map((json) => DosenModel.fromJson(json)).toList();
+        }
       }
-    } catch (e) {
-      print('❌ Error: $e');
-      throw Exception('Error: $e');
-    }
-  }
 
-  // MODUL 5: GET data menggunakan DIO
-  Future<List<DosenModel>> getDosenListWithDio() async {
-    try {
-      print('📡 Mengambil data dosen dengan DIO...');
-      final response = await _dio.get(
-        '$baseUrl/users',
-        options: Options(
-          headers: {'Content-Type': 'application/json'},
-          sendTimeout: const Duration(seconds: 10),
-          receiveTimeout: const Duration(seconds: 10),
-        ),
-      );
-
-      print('📥 Status Code: ${response.statusCode}');
+      print('🌐 Mengambil data dari API (online)');
+      final response = await _dioClient.get('$baseUrl/users');
       
       if (response.statusCode == 200) {
         List<dynamic> data = response.data;
-        print('✅ Berhasil mengambil ${data.length} data dosen');
-        return data.map((json) => DosenModel.fromJson(json)).toList();
+        final dosenList = data.map((json) => DosenModel.fromJson(json)).toList();
+        
+        await _saveToCache(data);
+        await _storage.saveLastUpdate('dosen_last_update', DateTime.now());
+        
+        print('✅ Berhasil mengambil ${dosenList.length} data dari API');
+        return dosenList;
       } else {
         throw Exception('Gagal memuat data: ${response.statusCode}');
       }
-    } on DioException catch (e) {
-      print('❌ Dio Error: ${e.message}');
-      throw Exception('Dio Error: ${e.message}');
     } catch (e) {
-      print('❌ Error: $e');
-      throw Exception('Error: $e');
+      print('❌ Error: $e, mencoba mengambil dari cache...');
+      
+      final cachedData = _storage.getCachedDosenList();
+      if (cachedData != null && cachedData.isNotEmpty) {
+        print('📦 Mengambil data dari LOCAL STORAGE (offline fallback)');
+        return cachedData.map((json) => DosenModel.fromJson(json)).toList();
+      }
+      
+      throw Exception('Tidak ada koneksi dan tidak ada data cache: $e');
     }
+  }
+
+  bool _isCacheValid() {
+    return _storage.isCacheValid('dosen_last_update', maxAge: const Duration(hours: 1));
+  }
+
+  Future<void> _saveToCache(List<dynamic> data) async {
+    final List<Map<String, dynamic>> jsonList = 
+        data.map((item) => item as Map<String, dynamic>).toList();
+    await _storage.saveDosenList(jsonList);
+    print('💾 Data disimpan ke local storage');
+  }
+
+  Future<List<DosenModel>> refreshDosenList() async {
+    return await getDosenList(forceRefresh: true);
+  }
+
+  Future<List<DosenModel>?> getCachedDosenList() async {
+    final cachedData = _storage.getCachedDosenList();
+    if (cachedData != null) {
+      return cachedData.map((json) => DosenModel.fromJson(json)).toList();
+    }
+    return null;
+  }
+
+  DateTime? getLastUpdate() {
+    return _storage.getLastUpdate('dosen_last_update');
+  }
+
+  Future<bool> clearCache() async {
+    return await _storage.clearCache();
   }
 }
